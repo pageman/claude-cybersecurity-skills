@@ -1,230 +1,404 @@
 # Claude Cybersecurity Skills
 
-A comprehensive collection of ready-to-use cybersecurity skills for Claude Code, enabling AI-assisted security testing, threat hunting, and defensive operations.
+<div align="center">
+
+**Professional cybersecurity capabilities for Claude AI - with built-in authorization and ethics**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Status: Prototype](https://img.shields.io/badge/status-prototype-orange.svg)](https://github.com/pageman/claude-cybersecurity-skills)
+
+[Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Roadmap](#roadmap) • [Contributing](#contributing)
+
+</div>
+
+---
 
 ## Overview
 
-This repository provides **50+ cybersecurity skills** across offensive security, defensive operations, threat intelligence, and compliance domains. Each skill includes documentation, code examples, ethical guidelines, and best practices.
+Claude Cybersecurity Skills is a **prototype framework** that brings professional security testing capabilities to Claude AI, inspired by [claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills). Unlike generic security tools, this framework includes **mandatory authorization checks** and **comprehensive audit logging** to ensure ethical use.
 
-## Key Features
+### What Makes This Different?
 
-- **Multi-Domain Coverage**: Reconnaissance, web security, network testing, forensics, threat intelligence, and more
-- **Ethical Framework**: Built-in authorization checks and scope validation
-- **Workflow Orchestration**: Multi-stage attack chains and automated playbooks
-- **Defensive + Offensive**: Equal focus on red team and blue team operations
-- **Compliance Ready**: Automated reporting and framework mapping
+- **🔒 Authorization First**: All offensive operations require explicit authorization before execution
+- **📝 Audit Everything**: Comprehensive logging creates accountability for all security operations
+- **⚖️ Ethical by Design**: Built-in scope validation prevents out-of-scope testing
+- **🔵 Red + Blue**: Equal focus on offensive (red team) and defensive (blue team) operations
+- **🎯 MITRE ATT&CK**: All skills mapped to adversary tactics and techniques
 
-## Installation
+## Current Status
 
-### Claude Code (Recommended)
-```bash
-# Install via Claude Code marketplace
-1. Open Claude Code
-2. Navigate to Skills/Plugins
-3. Search for "cybersecurity-skills"
-4. Click Install
-```
+This is a **working prototype** with **5 production-ready skills** demonstrating the framework's capabilities:
 
-### Manual Installation
-```bash
-git clone https://github.com/your-org/claude-cybersecurity-skills.git
-cd claude-cybersecurity-skills
-pip install -r requirements.txt
-```
+| Skill | Category | Type | Authorization Required |
+|-------|----------|------|----------------------|
+| **Subdomain Enumeration** | Reconnaissance | Offensive | ✅ Yes |
+| **Nmap Scanning** | Network Security | Offensive | ✅ Yes |
+| **Port Scanner** | Network Security | Offensive | ✅ Yes |
+| **Web Security Scanner** | Web Application | Offensive | ✅ Yes |
+| **Hash Cracker** | Cryptography | Offensive | ✅ Yes |
+| **CVE Lookup** | Vuln Management | Defensive | ❌ No |
+| **Sigma Rule Creation** | Detection | Defensive | ❌ No |
 
-## Skill Categories
+## Features
 
-### 🔍 Reconnaissance & OSINT (5 skills)
-- Subdomain enumeration
-- DNS reconnaissance
-- WHOIS lookup and analysis
-- Certificate transparency monitoring
-- Shodan/Censys integration
-
-### 🌐 Web Application Security (8 skills)
-- OWASP ZAP automation
-- FFUF web fuzzing
-- SQLMap integration
-- Nuclei vulnerability scanning
-- JWT analysis
-- API security testing
-- XSS detection
-- Directory enumeration
-
-### 🔌 Network Security (5 skills)
-- Nmap scanning and enumeration
-- Service version detection
-- Network vulnerability scanning
-- Packet analysis with tcpdump
-- SSL/TLS testing
-
-### 🛡️ Threat Intelligence (6 skills)
-- CVE database lookup
-- MITRE ATT&CK mapping
-- IOC enrichment
-- VirusTotal integration
-- Threat feed aggregation
-- YARA rule creation
-
-### 🔎 Digital Forensics (5 skills)
-- File metadata extraction
-- Memory dump analysis
-- Log parsing and correlation
-- Timeline analysis
-- Evidence collection
-
-### 📊 Security Monitoring (6 skills)
-- Sigma rule creation
-- SIEM query generation
-- Log analysis automation
-- Anomaly detection
-- Alert triage
-- Hunt query development
-
-### ☁️ Cloud Security (5 skills)
-- AWS security audit (Prowler)
-- Azure security assessment
-- K8s security scanning
-- Cloud misconfiguration detection
-- IAM policy analysis
-
-### 🔐 Vulnerability Management (5 skills)
-- Dependency scanning
-- Container security (Trivy)
-- SBOM generation
-- CVSS scoring
-- Patch prioritization
-
-## Quick Start
-
-### Example 1: Subdomain Enumeration
-```python
-from cybersec_skills import recon
-
-# Enumerate subdomains for a target (with authorization)
-results = recon.enumerate_subdomains(
-    domain="example.com",
-    authorization_token="pentest-2024-001"
-)
-
-print(f"Found {len(results.subdomains)} subdomains")
-for subdomain in results.subdomains:
-    print(f"  - {subdomain.name} [{subdomain.ip}]")
-```
-
-### Example 2: Vulnerability Scanning
-```python
-from cybersec_skills import vuln_mgmt
-
-# Check for CVEs affecting a specific service
-cves = vuln_mgmt.lookup_cve(
-    product="nginx",
-    version="1.18.0"
-)
-
-for cve in cves:
-    print(f"{cve.id}: {cve.description}")
-    print(f"  CVSS: {cve.cvss_score} ({cve.severity})")
-```
-
-### Example 3: Sigma Rule Creation
-```python
-from cybersec_skills import detection
-
-# Generate Sigma rule from attack pattern
-rule = detection.create_sigma_rule(
-    technique="T1078",  # Valid Accounts
-    description="Detect suspicious service account login",
-    logsource="windows-security"
-)
-
-print(rule.to_yaml())
-```
-
-## Authorization & Ethics
-
-**CRITICAL**: All offensive security tools require explicit authorization:
-
-1. **Authorization Tokens**: Required for reconnaissance and exploitation tools
-2. **Scope Validation**: All operations validate target is in authorized scope
-3. **Audit Logging**: All tool usage is logged for accountability
-4. **Ethical Guidelines**: Each skill includes responsible use guidance
-
-### Setting Up Authorization
+### 🔐 Authorization Framework
 
 ```python
 from cybersec_skills import auth
 
-# Initialize for penetration test
+# Penetration testing mode (requires authorization file)
 auth.set_context(
     mode="pentest",
-    authorization_file="./pentest-authorization.json",
+    authorization_file="./pentest-auth.json",
     scope=["*.example.com", "192.168.1.0/24"]
 )
 
-# Or for CTF/educational use
+# CTF/Educational mode
 auth.set_context(
     mode="ctf",
     competition="HackTheBox",
     target="10.10.10.150"
 )
 
-# Or for defensive/blue team only
+# Defensive operations (no authorization needed)
 auth.set_context(mode="defensive")
 ```
 
-## Modes of Operation
+### 🎯 Reconnaissance - Subdomain Enumeration
 
-- **`defensive`**: Blue team only (monitoring, detection, forensics)
-- **`pentest`**: Requires authorization file with scope
-- **`ctf`**: Educational/competition (requires proof of participation)
-- **`research`**: Security research (requires institutional approval)
+```python
+from cybersec_skills import recon, auth
 
-## Architecture
+# Set authorization context
+auth.set_context(mode="pentest", authorization_file="./auth.json")
+
+# Enumerate subdomains
+results = recon.enumerate_subdomains(
+    domain="example.com",
+    methods=["crt.sh", "dns_bruteforce"]
+)
+
+print(f"Found {len(results.subdomains)} subdomains:")
+for sub in results.subdomains:
+    print(f"  {sub['domain']:30s} → {sub['ip']}")
+
+# Export results
+results.export("subdomains.json", format="json")
+```
+
+**Features:**
+- Certificate Transparency log queries (crt.sh)
+- DNS brute forcing with customizable wordlists
+- Automatic IP resolution and deduplication
+- Export to JSON/TXT/CSV
+
+### 🔍 Network Security - Nmap Scanning
+
+```python
+from cybersec_skills import network, auth
+
+# Authorization required
+auth.set_context(mode="pentest", authorization_file="./auth.json")
+
+# Run comprehensive scan
+scan = network.nmap_scan(
+    target="192.168.1.100",
+    scan_type="full",  # quick, full, stealth, connect
+    service_detection=True,
+    os_detection=True,
+    timing=3  # T3 - normal speed
+)
+
+# Analyze results
+for host in scan.hosts:
+    print(f"\nHost: {host.ip} ({host.hostname})")
+    if host.os:
+        print(f"OS: {host.os}")
+    for port in host.open_ports:
+        print(f"  {port.port}/tcp - {port.service} {port.version}")
+```
+
+**Features:**
+- Multiple scan types (quick, full, stealth, connect)
+- Service and version detection
+- OS fingerprinting
+- NSE script execution
+- Full XML output parsing
+
+### 🛡️ Vulnerability Management - CVE Lookup
+
+```python
+from cybersec_skills import vuln_mgmt
+
+# No authorization required for defensive research
+cves = vuln_mgmt.search_cves(
+    product="nginx",
+    version="1.18.0",
+    severity=["HIGH", "CRITICAL"]
+)
+
+for cve in cves:
+    print(f"\n{cve.id} - {cve.severity}")
+    print(f"CVSS: {cve.cvss_score}/10.0")
+    print(f"Description: {cve.description[:200]}...")
+    print(f"References: {', '.join(cve.references[:3])}")
+```
+
+**Features:**
+- NVD API integration
+- Search by product, vendor, version
+- CVSS scoring and severity filtering
+- CWE mapping
+- Reference link extraction
+
+### 🔎 Threat Detection - Sigma Rules
+
+```python
+from cybersec_skills import detection
+
+# Create Sigma rule for suspicious process execution
+rule = detection.create_process_execution_rule(
+    title="Detect Mimikatz Execution",
+    description="Identifies potential credential dumping tool execution",
+    process_name="mimikatz.exe",
+    technique="T1003.001",  # MITRE ATT&CK: Credential Dumping
+    level="critical"
+)
+
+# Export for SIEM deployment
+rule.export("mimikatz-detection.yml")
+print(rule.to_yaml())
+```
+
+**Features:**
+- Programmatic Sigma rule generation
+- Pre-built templates (process, network, auth)
+- MITRE ATT&CK technique mapping
+- Rule validation
+- YAML export for SIEM deployment
+
+## Quick Start
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/pageman/claude-cybersecurity-skills.git
+cd claude-cybersecurity-skills
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Your First Scan
+
+```python
+from cybersec_skills import auth, network
+
+# Set up authorization for CTF environment
+auth.set_context(
+    mode="ctf",
+    competition="TryHackMe",
+    target="10.10.50.100"
+)
+
+# Run quick port scan
+scan = network.nmap_scan(
+    target="10.10.50.100",
+    scan_type="quick"
+)
+
+# View results
+print(f"Found {len(scan.hosts[0].open_ports)} open ports")
+for port in scan.hosts[0].open_ports:
+    print(f"  {port.port}/tcp - {port.service}")
+```
+
+### Authorization Setup
+
+Create an authorization file for penetration testing:
+
+```json
+{
+  "authorization_id": "pentest-2024-001",
+  "client": "Example Corp",
+  "scope": [
+    "*.example.com",
+    "192.168.1.0/24",
+    "10.0.0.0/8"
+  ],
+  "valid_from": "2024-01-01",
+  "valid_until": "2024-12-31",
+  "authorized_by": "John Doe (CISO)",
+  "restrictions": [
+    "No DoS attacks",
+    "Business hours only (9 AM - 5 PM EST)",
+    "Notify SOC before testing"
+  ]
+}
+```
+
+## Authorization Modes
+
+| Mode | Use Case | Authorization Required | Audit Level |
+|------|----------|----------------------|-------------|
+| `pentest` | Professional penetration testing | ✅ Authorization file + scope | High |
+| `ctf` | CTF competitions, HackTheBox, TryHackMe | ✅ Proof of participation | Medium |
+| `research` | Security research, bug bounty | ✅ Program documentation | High |
+| `defensive` | Blue team, detection engineering | ❌ None | Low |
+
+## Project Structure
 
 ```
 claude-cybersecurity-skills/
-├── README.md
-├── requirements.txt
-├── setup.py
-├── cybersec_skills/
-│   ├── __init__.py
-│   ├── auth/              # Authorization framework
-│   ├── recon/             # Reconnaissance skills
-│   ├── web_security/      # Web application testing
-│   ├── network/           # Network security
-│   ├── vuln_mgmt/         # Vulnerability management
-│   ├── detection/         # Threat detection
-│   ├── forensics/         # Digital forensics
-│   ├── threat_intel/      # Threat intelligence
-│   └── cloud_security/    # Cloud security
-├── skills/                # Individual skill definitions
-│   ├── subdomain-enumeration.yaml
-│   ├── nmap-scanning.yaml
-│   ├── cve-lookup.yaml
-│   └── ...
-├── examples/              # Usage examples
-└── docs/                  # Documentation
+├── README.md                      # This file
+├── PROJECT_SUMMARY.md            # Detailed technical overview
+├── GITHUB_SETUP.md               # Repository setup guide
+├── requirements.txt              # Python dependencies
+├── cybersec_skills/              # Main package
+│   ├── auth/                     # Authorization framework
+│   │   ├── authorization.py     # Scope validation, mode checking
+│   │   └── audit.py             # Comprehensive audit logging
+│   ├── recon/                    # Reconnaissance skills
+│   │   └── subdomain_enum.py    # Subdomain enumeration
+│   ├── network/                  # Network security
+│   │   └── nmap_scan.py         # Nmap integration
+│   ├── vuln_mgmt/                # Vulnerability management
+│   │   └── cve_lookup.py        # CVE/NVD research
+│   └── detection/                # Threat detection
+│       └── sigma_rules.py       # Sigma rule framework
+├── skills/                       # YAML skill definitions
+│   └── subdomain-enumeration.yaml
+└── examples/                     # Usage examples
+    ├── offensive_recon_example.py
+    └── defensive_detection_example.py
 ```
+
+## Examples
+
+### Red Team: Full Reconnaissance Workflow
+
+See [`examples/offensive_recon_example.py`](examples/offensive_recon_example.py) for a complete workflow:
+
+1. Load authorization file
+2. Enumerate subdomains
+3. Port scan discovered hosts
+4. Export results and audit logs
+
+### Blue Team: Detection Engineering
+
+See [`examples/defensive_detection_example.py`](examples/defensive_detection_example.py) for:
+
+1. CVE research for infrastructure
+2. Sigma rule creation for threats
+3. Rule validation
+4. SIEM deployment export
+
+## Documentation
+
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Complete technical overview, architecture, roadmap
+- **[GITHUB_SETUP.md](GITHUB_SETUP.md)** - Repository setup and configuration guide
+- **[skills/](skills/)** - Individual skill definitions with examples and best practices
+
+## Roadmap
+
+This prototype demonstrates the framework's potential. To make this production-ready:
+
+### 🎯 Near Term (High Priority)
+
+- [ ] Add 10+ critical skills:
+  - WHOIS lookup, DNS enumeration
+  - Web fuzzing (FFUF), directory enumeration
+  - SSL/TLS testing, packet analysis
+  - Memory forensics, log analysis
+  - YARA rule creation, IOC extraction
+- [ ] MCP (Model Context Protocol) server implementation
+- [ ] Comprehensive test suite (unit + integration)
+- [ ] CI/CD pipeline with security scanning
+- [ ] Contributing guidelines and code of conduct
+
+### 🚀 Medium Term
+
+- [ ] 25+ additional skills across all domains
+- [ ] Claude Code marketplace integration
+- [ ] Web-based skill browser/documentation
+- [ ] Docker containerization
+- [ ] Video tutorials and walkthroughs
+
+### 🌟 Long Term
+
+- [ ] 50+ total skills covering full security lifecycle
+- [ ] API integrations (Shodan, VirusTotal, AlienVault)
+- [ ] Workflow orchestration engine
+- [ ] Real-time collaboration features
+- [ ] Community skill marketplace
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! This project needs:
+
+- **Skill Developers**: Implement new security skills
+- **Security Researchers**: Validate techniques and best practices
+- **Documentation Writers**: Improve guides and examples
+- **Testers**: Test skills in various environments
+
+**Before Contributing:**
+- All offensive skills MUST include authorization checks
+- All skills MUST include comprehensive documentation
+- All skills MUST follow ethical guidelines
+- All code MUST include audit logging
+
+## Security & Ethics
+
+### ⚠️ Legal Disclaimer
+
+These tools are for **authorized security testing only**. Unauthorized use against systems you don't own or have explicit permission to test is **illegal** and may violate:
+
+- Computer Fraud and Abuse Act (CFAA) - USA
+- Computer Misuse Act - UK
+- Similar laws in your jurisdiction
+
+**Users are solely responsible** for obtaining proper authorization and complying with all applicable laws.
+
+### 🛡️ Built-in Safeguards
+
+1. **Mandatory Authorization**: Offensive skills won't execute without valid authorization
+2. **Scope Validation**: All targets checked against authorized scope (IP/CIDR/domain)
+3. **Audit Logging**: Every operation logged with timestamp, user, action
+4. **Rate Limiting**: Recommended in all skill documentation
+5. **Ethical Guidelines**: Every skill includes responsible use guidance
+
+### 📋 Best Practices
+
+- **Always** obtain written authorization before testing
+- **Never** test production systems without proper change control
+- **Always** respect scope limitations and testing windows
+- **Always** protect sensitive data discovered during testing
+- **Always** follow responsible disclosure for vulnerabilities
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details
+MIT License - See [LICENSE](LICENSE) for details.
 
-## Disclaimer
+## Acknowledgments
 
-These tools are for authorized security testing only. Unauthorized use against systems you don't own or have explicit permission to test is illegal. Users are responsible for compliance with all applicable laws and regulations.
+- Inspired by [claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)
+- Built for the security community
+- Special thanks to all contributors
 
-## Support
+## Support & Community
 
-- Documentation: [https://docs.cybersec-skills.io](https://docs.cybersec-skills.io)
-- Issues: [GitHub Issues](https://github.com/your-org/claude-cybersecurity-skills/issues)
-- Discord: [Join our community](https://discord.gg/cybersec-skills)
+- **Issues**: [GitHub Issues](https://github.com/pageman/claude-cybersecurity-skills/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/pageman/claude-cybersecurity-skills/discussions)
+- **Security**: Report vulnerabilities via GitHub Security Advisories
 
 ---
 
-Built with ❤️ for the security community
+<div align="center">
+
+**⭐ Star this repo if you find it useful!**
+
+Built with ❤️ for ethical hackers, security researchers, and defenders
+
+</div>
