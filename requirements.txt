@@ -1,0 +1,13 @@
+# Claude Cybersecurity Skills - Requirements
+
+# Core dependencies
+pyyaml>=6.0
+
+# Optional: For advanced features
+# nmap - System package, install via: apt-get install nmap or brew install nmap
+# Note: Some skills require external tools to be installed
+
+# Development dependencies (optional)
+pytest>=7.0.0
+black>=22.0.0
+mypy>=0.990

@@ -1,0 +1,254 @@
+name: nmap-scanning
+category: network-security
+tags:
+  - nmap
+  - scanning
+  - reconnaissance
+  - port-scanning
+  - service-enumeration
+
+description: |
+  Performs comprehensive network scanning using Nmap to discover open ports,
+  running services, service versions, and operating system information.
+
+offensive: true
+requires_authorization: true
+
+use_cases:
+  - "Discover open ports and services on target hosts"
+  - "Identify service versions for vulnerability assessment"
+  - "Map network topology and exposed services"
+  - "Detect operating system and device types"
+  - "Run vulnerability NSE scripts"
+  - "Validate firewall rules and network segmentation"
+
+scan_types:
+  - name: Quick Scan
+    description: "Scan top 1000 most common ports"
+    speed: Fast
+    detection_risk: Low
+    use_when: "Initial reconnaissance or large target ranges"
+
+  - name: Full Scan
+    description: "Scan all 65535 TCP ports"
+    speed: Slow
+    detection_risk: High
+    use_when: "Comprehensive assessment, small target range"
+
+  - name: Stealth Scan (SYN)
+    description: "Half-open SYN scan, less detectable"
+    speed: Medium
+    detection_risk: Low
+    use_when: "Evading basic IDS/firewall detection"
+
+  - name: Connect Scan
+    description: "Full TCP connection, more detectable"
+    speed: Medium
+    detection_risk: High
+    use_when: "No root privileges or when stealth not required"
+
+code_examples:
+  - title: Basic Port Scan
+    language: python
+    code: |
+      from cybersec_skills import network, auth
+
+      # Set authorization
+      auth.set_context(
+          mode='pentest',
+          authorization_file='./auth.json',
+          scope=['192.168.1.0/24']
+      )
+
+      # Perform quick scan
+      result = network.scan_target(
+          target='192.168.1.100',
+          scan_type='quick',
+          version_detection=True
+      )
+
+      print(f"Open ports on {result.target}:")
+      for port in result.ports:
+          print(f"  {port.port}/{port.protocol}: {port.service}")
+
+  - title: Comprehensive Vulnerability Scan
+    language: python
+    code: |
+      from cybersec_skills import network
+
+      # Full scan with version detection and vuln scripts
+      result = network.scan_target(
+          target='10.10.10.100',
+          scan_type='full',
+          version_detection=True,
+          scripts=['vuln', 'exploit'],
+          timing=2  # Slower timing to evade detection
+      )
+
+      # Export results
+      network.export_results(result, 'scan-results.json', format='json')
+
+  - title: OS Detection
+    language: python
+    code: |
+      from cybersec_skills import network
+
+      # Scan with OS detection (requires root)
+      result = network.scan_target(
+          target='192.168.1.1',
+          scan_type='stealth',
+          os_detection=True
+      )
+
+      if result.os_detection:
+          print(f"OS: {result.os_detection['name']}")
+          print(f"Accuracy: {result.os_detection['accuracy']}%")
+
+  - title: Specific Port Ranges
+    language: python
+    code: |
+      # Scan specific ports
+      result = network.scan_target(
+          target='example.com',
+          ports='80,443,8000-9000',
+          version_detection=True
+      )
+
+best_practices:
+  - "Always obtain written authorization before scanning"
+  - "Start with quick scans before full port scans"
+  - "Use appropriate timing templates to avoid overwhelming targets"
+  - "Scan during approved maintenance windows when possible"
+  - "Document all scan parameters and results"
+  - "Be aware that scans may trigger IDS/IPS alerts"
+  - "Use stealth techniques only when explicitly authorized"
+  - "Validate scan results with manual verification"
+
+integration:
+  inputs:
+    - IP addresses from subdomain enumeration
+    - CIDR ranges from network documentation
+    - Hostnames from reconnaissance phase
+  outputs:
+    - Open ports and services for vulnerability assessment
+    - Service versions for exploit identification
+    - OS information for targeted attacks
+  next_steps:
+    - Vulnerability scanning of discovered services
+    - Web application testing on HTTP/HTTPS ports
+    - Service-specific exploitation
+
+timing_templates:
+  T0_paranoid:
+    description: "Extremely slow, evades IDS"
+    wait: "5 minutes between probes"
+    use_when: "Maximum stealth required"
+
+  T1_sneaky:
+    description: "Very slow, evades most IDS"
+    wait: "15 seconds between probes"
+    use_when: "Stealth more important than speed"
+
+  T2_polite:
+    description: "Slow, less bandwidth/resource intensive"
+    wait: "0.4 seconds between probes"
+    use_when: "Avoiding network congestion"
+
+  T3_normal:
+    description: "Default timing (recommended)"
+    wait: "Dynamic timing"
+    use_when: "General purpose scanning"
+
+  T4_aggressive:
+    description: "Fast, assumes fast network"
+    wait: "Minimal delays"
+    use_when: "Fast reliable networks"
+
+  T5_insane:
+    description: "Extremely fast, may miss results"
+    wait: "No delays"
+    use_when: "Speed critical, accuracy less important"
+
+ethical_guidelines:
+  authorization: |
+    REQUIRED: You must have explicit written authorization from the network
+    owner before scanning. Unauthorized port scanning is illegal in most
+    jurisdictions.
+
+  scope: |
+    Only scan IP addresses/ranges explicitly listed in your authorization.
+    Do not expand scope without additional authorization.
+
+  timing: |
+    Use appropriate timing to avoid disrupting target services. Aggressive
+    scanning can cause denial of service conditions.
+
+  detection: |
+    Be aware that scans will likely be detected and logged. Coordinate with
+    defensive teams to avoid triggering incident response.
+
+  data_handling: |
+    Scan results may contain sensitive information about infrastructure.
+    Protect results according to engagement requirements.
+
+nse_script_categories:
+  - name: auth
+    description: "Authentication testing scripts"
+
+  - name: default
+    description: "Safe scripts run by default"
+
+  - name: discovery
+    description: "Network and service discovery"
+
+  - name: exploit
+    description: "Exploitation scripts (use with caution)"
+
+  - name: vuln
+    description: "Vulnerability detection scripts"
+
+  - name: safe
+    description: "Scripts unlikely to cause issues"
+
+  - name: intrusive
+    description: "Scripts that may crash services"
+
+common_ports:
+  web:
+    - 80: HTTP
+    - 443: HTTPS
+    - 8080: HTTP Alternate
+    - 8443: HTTPS Alternate
+
+  database:
+    - 3306: MySQL
+    - 5432: PostgreSQL
+    - 1433: MSSQL
+    - 27017: MongoDB
+
+  remote_access:
+    - 22: SSH
+    - 23: Telnet
+    - 3389: RDP
+    - 5900: VNC
+
+  email:
+    - 25: SMTP
+    - 110: POP3
+    - 143: IMAP
+    - 587: SMTP Submission
+
+references:
+  - title: "Nmap Official Documentation"
+    url: https://nmap.org/book/man.html
+
+  - title: "Nmap NSE Scripts"
+    url: https://nmap.org/nsedoc/
+
+  - title: "PTES - Port Scanning"
+    url: http://www.pentest-standard.org/index.php/PTES_Technical_Guidelines#Port_Scanning
+
+mitre_attack:
+  technique: T1046
+  name: "Discovery: Network Service Scanning"
+  description: "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation."

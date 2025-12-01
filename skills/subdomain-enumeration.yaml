@@ -1,0 +1,162 @@
+name: subdomain-enumeration
+category: reconnaissance
+tags:
+  - osint
+  - dns
+  - recon
+  - subdomain
+  - enumeration
+
+description: |
+  Discovers subdomains for a target domain using multiple techniques including
+  certificate transparency logs, DNS brute forcing, and passive enumeration.
+
+offensive: true
+requires_authorization: true
+
+use_cases:
+  - "Map attack surface by discovering all subdomains of a target organization"
+  - "Find forgotten or misconfigured subdomains that may be vulnerable"
+  - "Identify development and staging environments"
+  - "Discover API endpoints and admin panels"
+  - "Generate comprehensive target list for penetration testing"
+
+methods:
+  - name: Certificate Transparency Logs
+    description: Query CT logs (crt.sh) for certificates issued to subdomains
+    pros:
+      - Passive technique (no direct interaction with target)
+      - Comprehensive historical data
+      - Fast and reliable
+    cons:
+      - Only finds subdomains with SSL certificates
+      - May include expired/obsolete subdomains
+
+  - name: DNS Brute Forcing
+    description: Test common subdomain names against target DNS
+    pros:
+      - Finds subdomains without certificates
+      - Confirms current DNS resolution
+    cons:
+      - Active technique (generates DNS traffic)
+      - Limited by wordlist quality
+      - Can be detected by monitoring
+
+code_examples:
+  - title: Basic Subdomain Enumeration
+    language: python
+    code: |
+      from cybersec_skills import recon, auth
+
+      # Set authorization context
+      auth.set_context(
+          mode='pentest',
+          authorization_file='./pentest-auth.json',
+          scope=['*.example.com']
+      )
+
+      # Enumerate subdomains
+      results = recon.enumerate_subdomains(
+          domain='example.com',
+          methods=['crt', 'dns']
+      )
+
+      print(f"Found {results.total_found} subdomains:")
+      for sub in results.subdomains:
+          print(f"  {sub['name']} -> {sub['ip']}")
+
+  - title: Custom Wordlist Brute Force
+    language: python
+    code: |
+      from cybersec_skills import recon
+
+      # Use custom wordlist for DNS brute forcing
+      results = recon.enumerate_subdomains(
+          domain='target.com',
+          methods=['dns'],
+          wordlist='/usr/share/wordlists/subdomains-top10000.txt'
+      )
+
+      # Export results
+      recon.export_subdomains(results, 'subdomains.json', format='json')
+
+  - title: CTF Mode (Educational)
+    language: python
+    code: |
+      from cybersec_skills import recon, auth
+
+      # CTF mode for educational environments
+      auth.set_context(
+          mode='ctf',
+          competition='HackTheBox',
+          target='*.htb.local'
+      )
+
+      results = recon.enumerate_subdomains('target.htb.local')
+
+best_practices:
+  - "Always verify you have written authorization before scanning"
+  - "Use passive techniques (CT logs) first to avoid detection"
+  - "Rate-limit DNS brute forcing to avoid overwhelming target DNS"
+  - "Document all discovered subdomains in engagement notes"
+  - "Validate findings before including in reports"
+  - "Be aware that some subdomains may be honeypots"
+
+integration:
+  inputs:
+    - Domain from reconnaissance phase
+    - Scope definition from authorization document
+  outputs:
+    - List of subdomains with IP addresses
+    - Can feed into vulnerability scanning
+    - Can feed into web application testing
+  next_steps:
+    - Port scanning discovered hosts
+    - Web application enumeration
+    - Service version detection
+
+ethical_guidelines:
+  authorization: |
+    REQUIRED: You must have explicit written authorization to enumerate
+    subdomains of a target. Unauthorized reconnaissance is illegal.
+
+  scope: |
+    Only enumerate subdomains within your authorized scope. Do not
+    recursively enumerate discovered domains unless explicitly authorized.
+
+  rate_limiting: |
+    Implement appropriate delays between requests to avoid overwhelming
+    target infrastructure or appearing as a DoS attack.
+
+  responsible_disclosure: |
+    If you discover sensitive information (credentials, PII, etc.) during
+    enumeration, follow responsible disclosure practices.
+
+  logging: |
+    All enumeration activities are logged for audit purposes. Logs should
+    be retained according to engagement requirements.
+
+tools:
+  - name: crt.sh
+    description: Certificate transparency log database
+    url: https://crt.sh
+
+  - name: Amass
+    description: Comprehensive subdomain enumeration tool
+    url: https://github.com/OWASP/Amass
+
+  - name: Subfinder
+    description: Fast passive subdomain discovery tool
+    url: https://github.com/projectdiscovery/subfinder
+
+references:
+  - title: "OWASP Testing Guide - Enumerate Applications"
+    url: https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/01-Information_Gathering/02-Fingerprint_Web_Server
+
+  - title: "Certificate Transparency"
+    url: https://certificate.transparency.dev/
+
+mitre_attack:
+  technique: T1590.001
+  name: "Reconnaissance: Gather Victim Network Information - Domain Properties"
+  description: "Adversaries may gather information about the victim's network domain(s) that can be used during targeting."
